@@ -74,18 +74,18 @@ def train_2d_operator(model,
             if data_weight > 0:
                 pred = model(data_ic).squeeze(dim=-1)
                 pred = pred * mollifier
-                data_loss = myloss(pred, y)
+                data_loss = myloss(pred, u)
 
-            a = x[..., 0]
+            a = data_ic[..., 0]
             f_loss = darcy_loss(pred, a)
 
             loss = data_weight * data_loss + f_weight * f_loss
             loss.backward()
             optimizer.step()
 
-            loss_dict['train_loss'] += loss.item() * y.shape[0]
-            loss_dict['f_loss'] += f_loss.item() * y.shape[0]
-            loss_dict['data_loss'] += data_loss.item() * y.shape[0]
+            loss_dict['train_loss'] += loss.item() * u.shape[0]
+            loss_dict['f_loss'] += f_loss.item() * u.shape[0]
+            loss_dict['data_loss'] += data_loss.item() * u.shape[0]
 
         scheduler.step()
         train_loss_val = loss_dict['train_loss'] / len(train_loader.dataset)
